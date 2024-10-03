@@ -8,16 +8,18 @@ Route::get('/', function(){
     return response()->json(["message" => "Fullstack Challenge 🏅 - Dictionary"]);
 });
 
-Route::middleware('api')->group(function(){
+Route::post('/auth/signup', [AuthController::class, 'signup'])->name('register');
+Route::post('/auth/signin', [AuthController::class, 'signin'])->name('login');
+
+Route::middleware('auth:api')->group(function(){
     Route::prefix('auth')->group(function () {
-        Route::post('/signup', [AuthController::class, 'signup'])->name('register');
-        Route::post('/signin', [AuthController::class, 'signin'])->name('login');
-        Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api')->name('logout');
-        Route::post('/refresh', [AuthController::class, 'refresh'])->middleware('auth:api')->name('refresh');
-        Route::post('/me', [AuthController::class, 'me'])->middleware('auth:api')->name('me');
+        Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+        Route::post('/refresh', [AuthController::class, 'refresh'])->name('refresh');
+        Route::get('/me', [AuthController::class, 'me'])->name('me');
     });
 
     Route::post('/upload-txt', [FileController::class, 'uploadTxt']);
 });
 
 
+ 

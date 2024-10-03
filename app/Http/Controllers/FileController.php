@@ -2,17 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UploadTxtRequest;
+use App\Models\word;
 use Illuminate\Http\Request;
 
 class FileController extends Controller
 {
-    public function uploadTxt(UploadTxtRequest $request)
+    public function uploadTxt()
     {
-        $file = $request->file('file');
+        $filePath  = storage_path('app/words.txt');
 
-        $content = file_get_contents($file->getRealPath());
+        if (file_exists($filePath)) {
+            $handle = fopen($filePath, "r");
 
-        $lines = explode("/n", $content);
+            if($handle){
+                while (($line = fgets($handle)) !== false) {
+                    $line = trim($line);
+                    word::create([
+                        'word' => trim($line),
+                    ]);
+                }
+                fclose($handle);
+            }
+            return response()->json(['message' => 'File saved successfully!'], 200);
+        }
+
+        return response()->json(['message' => 'File not found!'], 200);
     }
 }
