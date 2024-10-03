@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function(){
@@ -15,6 +16,8 @@ Route::middleware('api')->group(function(){
         Route::post('/refresh', [AuthController::class, 'refresh'])->middleware('auth:api')->name('refresh');
         Route::post('/me', [AuthController::class, 'me'])->middleware('auth:api')->name('me');
     });
+
+    Route::post('/upload-txt', [FileController::class, 'uploadTxt']);
 });
 
 
