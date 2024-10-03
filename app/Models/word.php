@@ -6,7 +6,22 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class word extends Model
+class Word extends Model
 {
     use HasFactory, HasUuids;
+
+    protected $fillable = [
+        'word'
+    ];
+
+    public function favoriteWords()
+    {
+        return $this->hasMany(FavoriteWord::class);
+    }
+
+    public function wordHistories()
+    {
+        return $this->hasMany(WordHistory::class);
+    }
+    
 }
