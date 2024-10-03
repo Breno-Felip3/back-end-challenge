@@ -21,8 +21,12 @@ Route::middleware('auth:api')->group(function(){
 
     Route::post('/upload-txt', [FileController::class, 'uploadTxt']);
 
-    Route::prefix('entries')->group(function(){
-        Route::get('/en', [WordController::class, 'index']);
+    Route::prefix('entries/en')->group(function(){
+        Route::get('/', [WordController::class, 'index']);
+        Route::get('/{word}', [WordController::class, 'show']);
+        Route::post('/{word}/favorite', [WordController::class, 'favoriteWord']);
+
+        // Route::delete('/{word}/unfavorite', [WordController::class, 'removeFavoriteWord']);
     });
 });
 

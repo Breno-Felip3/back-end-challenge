@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\WordResource;
 use App\Repository\WordRepository;
 use Illuminate\Http\Request;
 
@@ -27,5 +26,36 @@ class WordController extends Controller
             'hasNext' => $words->hasMorePages(), 
             'hasPrev' => $words->currentPage() > 1, 
         ];
+    }
+
+    public function show($word)
+    {
+        $word = $this->wordRepository->wordHistory($word);
+
+        if(! $word){
+            return response()->json(["message" => "Not Found"], 400);
+        }
+
+        return [
+            'results' => $word
+        ];
+    }
+
+    public function favoriteWord($word)
+    {
+        $word = $this->wordRepository->favoriteWord($word);
+
+        if(! $word){
+            return response()->json(["message" => "Not Found"], 400);
+        }
+
+        return [
+            'results' => $word
+        ];
+    }
+
+    public function removeFavoriteWord($word)
+    {
+        $this->wordRepository->removeFavoriteWord($word);
     }
 }

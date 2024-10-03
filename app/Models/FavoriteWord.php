@@ -2,12 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class FavoriteWord extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
+
+    protected $fillable = [
+        'word_id',
+        'user_id'
+    ];
 
     public function word()
     {

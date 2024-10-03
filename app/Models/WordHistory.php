@@ -10,6 +10,11 @@ class WordHistory extends Model
 {
     use HasFactory, HasUuids;
 
+    protected $fillable = [
+        'word_id',
+        'user_id'
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
