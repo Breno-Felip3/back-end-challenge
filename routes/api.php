@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\WordController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function(){
@@ -19,6 +20,10 @@ Route::middleware('auth:api')->group(function(){
     });
 
     Route::post('/upload-txt', [FileController::class, 'uploadTxt']);
+
+    Route::prefix('entries')->group(function(){
+        Route::get('/en', [WordController::class, 'index']);
+    });
 });
 
 
