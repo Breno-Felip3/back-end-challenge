@@ -23,9 +23,11 @@ class WordController extends Controller
         return $this->returnPaginate($words, $results);
     }
 
-    public function show($word)
+    public function show(Request $request, $word)
     {
-        $word = $this->wordRepository->saveWordHistory($word);
+        //Realiza um hash da url completa
+        $cacheKey = md5($request->fullUrl());
+        $word = $this->wordRepository->saveWordHistory($word, $cacheKey);
 
         if(! $word){
             return response()->json(["message" => "Not Found"], 400);
@@ -52,7 +54,7 @@ class WordController extends Controller
     public function removeFavoriteWord($word)
     {
         $response = $this->wordRepository->removeFavoriteWord($word);
-
+        
         if($response == 1){
             return response()->json(["message" => "Not Content"], 204);
         }

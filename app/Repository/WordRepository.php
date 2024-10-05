@@ -5,6 +5,7 @@ use App\Models\FavoriteWord;
 use App\Models\Word;
 use App\Models\WordHistory;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class WordRepository
 {
@@ -31,12 +32,12 @@ class WordRepository
 
     public function saveWordHistory($word)
     {
-       $word = $this->getWord($word);
-        if($word)
-        {
-            $user = Auth::user();
+        $response = $this->getWord($word);
+        $user = Auth::user();
 
-            $wordId = $word->id;
+        if($response)
+        {
+            $wordId = $response->id;
             $userId = $user->id;
 
             $accessHistory = [
@@ -50,18 +51,18 @@ class WordRepository
             }
         }
 
-        return $word;
+        return $response;
     }
 
     public function saveFavoriteWord($word)
     {
-        $word = $this->getWord($word);
+        $response = $this->getWord($word);
 
-        if($word)
+        if($response)
         {
             $user = Auth::user();
 
-            $wordId = $word->id;
+            $wordId = $response->id;
             $userId = $user->id;
 
             $favoriteWord = [
@@ -75,22 +76,21 @@ class WordRepository
             }
         }
 
-        return $word;
+        return $response;
     }
 
     public function removeFavoriteWord($word)
     {
-        $word = $this->getWord($word);
+        $response = $this->getWord($word);
 
-        if($word)
+        if($response)
         {
             $user = Auth::user();
 
-            $wordId = $word->id;
+            $wordId = $response->id;
             $userId = $user->id;
 
             $this->favoriteWord->where('word_id', $wordId)->where('user_id', $userId)->delete();
-
             return 1;
         }
 
