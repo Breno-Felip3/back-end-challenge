@@ -20,7 +20,7 @@ class WordController extends Controller
         $words = $this->wordRepository->getWords($limit, $page, $search); 
         $results = $words->pluck('word');
 
-        return $this->returPaginate($words, $results);
+        return $this->returnPaginate($words, $results);
     }
 
     public function show($word)
@@ -67,7 +67,7 @@ class WordController extends Controller
         $histories = $this->wordRepository->getHistoryByUser($limit, $page);
         $results = WordResource::collection($histories->pluck('word'));
 
-        return $this->returPaginate($histories, $results);
+        return $this->returnPaginate($histories, $results);
     }
 
     public function favoritesByUser(Request $request)
@@ -78,10 +78,10 @@ class WordController extends Controller
         $favorites = $this->wordRepository->getFavoritesByUser($limit, $page);
         $results =  WordResource::collection($favorites->pluck('word'));
 
-        return $this->returPaginate($favorites, $results);
+        return $this->returnPaginate($favorites, $results);
     }
 
-    public function returPaginate($data, $results)
+    public function returnPaginate($data, $results)
     {
         return [
             'results' => $results, 
