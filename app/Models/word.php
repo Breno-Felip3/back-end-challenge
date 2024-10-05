@@ -14,14 +14,4 @@ class Word extends Model
         'word'
     ];
 
-    public function favoriteWords()
-    {
-        return $this->hasMany(FavoriteWord::class);
-    }
-
-    public function wordHistories()
-    {
-        return $this->hasMany(WordHistory::class);
-    }
-    
 }

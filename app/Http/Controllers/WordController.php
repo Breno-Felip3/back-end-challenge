@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\WordResource;
 use App\Repository\WordRepository;
 use Illuminate\Http\Request;
 
@@ -17,20 +18,14 @@ class WordController extends Controller
         $search = $request->search ?? "";
 
         $words = $this->wordRepository->getWords($limit, $page, $search); 
-        
-        return [
-            'results' => $words->pluck('word'), 
-            'totalDocs' => $words->total(), 
-            'page' => $words->currentPage(), 
-            'totalPages' => $words->lastPage(), 
-            'hasNext' => $words->hasMorePages(), 
-            'hasPrev' => $words->currentPage() > 1, 
-        ];
+        $results = $words->pluck('word');
+
+        return $this->returPaginate($words, $results);
     }
 
     public function show($word)
     {
-        $word = $this->wordRepository->wordHistory($word);
+        $word = $this->wordRepository->saveWordHistory($word);
 
         if(! $word){
             return response()->json(["message" => "Not Found"], 400);
@@ -43,7 +38,7 @@ class WordController extends Controller
 
     public function favoriteWord($word)
     {
-        $word = $this->wordRepository->favoriteWord($word);
+        $word = $this->wordRepository->saveFavoriteWord($word);
 
         if(! $word){
             return response()->json(["message" => "Not Found"], 400);
@@ -56,6 +51,45 @@ class WordController extends Controller
 
     public function removeFavoriteWord($word)
     {
-        $this->wordRepository->removeFavoriteWord($word);
+        $response = $this->wordRepository->removeFavoriteWord($word);
+
+        if($response == 1){
+            return response()->json(["message" => "Not Content"], 204);
+        }
+        return response()->json(["message" => "Not Found"], 400);
+    }
+
+    public function historyByUser(Request $request)
+    {
+        $limit = $request->limit ?? 5;
+        $page = $request->page ?? 1;
+
+        $histories = $this->wordRepository->getHistoryByUser($limit, $page);
+        $results = WordResource::collection($histories->pluck('word'));
+
+        return $this->returPaginate($histories, $results);
+    }
+
+    public function favoritesByUser(Request $request)
+    {
+        $limit = $request->limit ?? 5;
+        $page = $request->page ?? 1;
+
+        $favorites = $this->wordRepository->getFavoritesByUser($limit, $page);
+        $results =  WordResource::collection($favorites->pluck('word'));
+
+        return $this->returPaginate($favorites, $results);
+    }
+
+    public function returPaginate($data, $results)
+    {
+        return [
+            'results' => $results, 
+            'totalDocs' => $data->total(), 
+            'page' => $data->currentPage(), 
+            'totalPages' => $data->lastPage(), 
+            'hasNext' => $data->hasMorePages(), 
+            'hasPrev' => $data->currentPage() > 1, 
+        ];
     }
 }

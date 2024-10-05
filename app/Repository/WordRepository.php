@@ -29,7 +29,7 @@ class WordRepository
         return $this->word->select("*")->where('word', $word)->first();
     }
 
-    public function wordHistory($word)
+    public function saveWordHistory($word)
     {
        $word = $this->getWord($word);
         if($word)
@@ -53,7 +53,7 @@ class WordRepository
         return $word;
     }
 
-    public function favoriteWord($word)
+    public function saveFavoriteWord($word)
     {
         $word = $this->getWord($word);
 
@@ -80,6 +80,32 @@ class WordRepository
 
     public function removeFavoriteWord($word)
     {
-        
+        $word = $this->getWord($word);
+
+        if($word)
+        {
+            $user = Auth::user();
+
+            $wordId = $word->id;
+            $userId = $user->id;
+
+            $this->favoriteWord->where('word_id', $wordId)->where('user_id', $userId)->delete();
+
+            return 1;
+        }
+
+        return 0;
+    }
+
+    public function getHistoryByUser($limit, $page)
+    {
+        $user = Auth::user();
+        return $user->wordHistories()->with('word')->paginate($limit, ["*"], 'page', $page);
+    }
+
+    public function getFavoritesByUser($limit, $page)
+    {
+        $user = Auth::user();
+        return $user->favoriteWords()->with('word')->paginate($limit, ["*"], 'page', $page);
     }
 }
