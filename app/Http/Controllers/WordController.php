@@ -23,11 +23,9 @@ class WordController extends Controller
         return $this->returnPaginate($words, $results);
     }
 
-    public function show(Request $request, $word)
+    public function show($word)
     {
-        //Realiza um hash da url completa
-        $cacheKey = md5($request->fullUrl());
-        $word = $this->wordRepository->saveWordHistory($word, $cacheKey);
+        $word = $this->wordRepository->saveWordHistory($word);
 
         if(! $word){
             return response()->json(["message" => "Not Found"], 400);
