@@ -11,29 +11,35 @@ class HeaderMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        //Inicia a contagem do tempo
+        // Inicia a contagem do tempo
         $startTime = microtime(true);
-        //gera uma chave dinâmica para o cache
+        // Gera uma chave dinâmica para o cache
         $cacheKey = md5($request->fullUrl());
     
         if (Cache::has($cacheKey)) 
         {
             $cacheStatus = 'HIT';
             $responseContent = Cache::get($cacheKey);
+            // Cria uma nova resposta com o conteúdo do cache
+            $response = response($responseContent);
         } 
         else 
         {
             $cacheStatus = 'MISS';
-            $responseContent = $next($request)->getContent();
+            //Obtem a resposta do Controller
+            $response = $next($request);
+            $responseContent = $response->getContent();
+            // Armazena no cache
             Cache::put($cacheKey, $responseContent, 120);
         }
-
-        //Transforma o tempo em ms
+    
+        // Transforma o tempo em ms
         $responseTime = round((microtime(true) - $startTime) * 1000, 2);
-        $response = response($responseContent);
+        
+        // Adiciona cabeçalhos
         $response->headers->set('x-cache', $cacheStatus);
         $response->headers->set('x-response-time', $responseTime . 'ms');
     
         return $response;
-    }    
+    }
 }
